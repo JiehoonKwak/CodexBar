@@ -379,7 +379,7 @@ struct ConfigValidationTests {
         let issue = issues.first { $0.provider == .gemini && $0.code == "workspace_unused" }
         let expectedMessage =
             "workspaceID is set but only azureopenai, openai, opencode, opencodego, devin, deepgram, " +
-            "xai, gitkraken, muse, and vercel support workspaceID."
+            "xai, gitkraken, muse, vercel, and claudeplatform support workspaceID."
         #expect(issue?.message == expectedMessage)
     }
 

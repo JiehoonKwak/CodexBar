@@ -72,8 +72,7 @@ struct PluginAPIKeyProviderImplementation: ProviderImplementation {
 
     @MainActor
     func settingsFields(context: ProviderSettingsContext) -> [ProviderSettingsFieldDescriptor] {
-        guard let field = self.spec.apiKeyField else { return [] }
-        var fields = [ProviderSettingsFieldDescriptor(
+        var fields = self.spec.apiKeyField.map { field in [ProviderSettingsFieldDescriptor(
             id: field.id,
             title: field.title,
             subtitle: field.subtitle,
@@ -81,7 +80,7 @@ struct PluginAPIKeyProviderImplementation: ProviderImplementation {
             placeholder: field.placeholder,
             binding: context.providerConfigBinding(.apiKey),
             actions: field.action.map { [.openURL(id: $0.id, title: $0.title, url: URL(string: $0.url))] } ?? [],
-            isVisible: nil)]
+            isVisible: nil)] } ?? []
         if let workspace = self.spec.workspaceField {
             fields.append(self.textField(workspace.field, binding: context.providerConfigBinding(.workspace)))
         }

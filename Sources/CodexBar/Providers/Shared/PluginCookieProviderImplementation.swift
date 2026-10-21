@@ -40,6 +40,7 @@ struct PluginCookieProviderImplementation: ProviderImplementation {
         _ = settings.resolvedCookieSource(provider: self.id, fallback: .auto)
         _ = settings[providerConfig: self.id, field: .cookieHeader]
         if self.spec.apiKeyField != nil { _ = settings[providerConfig: self.id, field: .apiKey] }
+        if self.spec.workspaceField != nil { _ = settings[providerConfig: self.id, field: .workspace] }
     }
 
     @MainActor

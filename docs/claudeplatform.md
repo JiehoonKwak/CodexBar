@@ -33,14 +33,26 @@ Why cookies: the Anthropic Admin API (`sk-ant-admin…`) is unavailable for indi
 API keys cannot read billing. The Console session is the only credential that can read an individual organization's
 balance.
 
+## Organization selection
+
+When the Console account has several API organizations, set **Organization ID** in Settings → Providers →
+Claude Platform to the UUID of the wallet you want to monitor. Find it under Console → Settings → Organization.
+The same value can be set as `workspaceID` in the `claudeplatform` config entry, or with
+`CLAUDE_PLATFORM_ORGANIZATION_ID` for the CLI. This selects one organization; balances are never combined.
+
+With a configured ID, CodexBar reads only that organization's balance, grants, spend and identity, regardless of
+organization-list order. A missing organization or denied billing access reports an error instead of substituting
+another wallet. With the field empty, the first readable API organization remains the default. Browser organization
+switches do not change this selection.
+
 ## Data
 
 These are undocumented Console endpoints used by the platform.claude.com billing page, so they may change without
 notice. CodexBar only issues read-only GETs:
 
 - `/api/organizations` lists organizations. Every organization whose `capabilities` include `api` is a candidate,
-  in listed order; Claude.ai chat organizations in the same list are ignored. An account without an API organization
-  reports that it has no Claude Console API organization.
+  in listed order (or only the configured organization). Claude.ai chat organizations in the same list are ignored.
+  An account without an API organization reports that it has no Claude Console API organization.
 - `/api/organizations/{uuid}/prepaid/credits` supplies the total balance (`amount`, in minor units) and credit grants
   (`promo_tranches` and `tranches`). CodexBar requests it for each candidate in order: HTTP 403 moves to the next
   candidate, and the first readable organization supplies the balance, spend, and organization name. If every

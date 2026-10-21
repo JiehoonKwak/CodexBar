@@ -118,6 +118,24 @@ struct PluginCookieProviderSpecTests {
         }
     }
 
+    @Test
+    func `console organization field reaches the web script without changing cookie source`() throws {
+        let fixture = try ProviderSettingsDescriptorTests().makeSettingsFixture(suite: #function)
+        fixture.settings.debugDisableKeychainAccess = false
+        let implementation = try #require(ProviderCatalog.implementation(for: .claudeplatform))
+        let field = try #require(implementation.settingsFields(
+            context: fixture.settingsContext(provider: .claudeplatform))
+            .first { $0.id == "claudeplatform-organization" })
+        field.binding.wrappedValue = "22222222-2222-4222-8222-222222222222"
+        let config = try #require(fixture.settings.providerConfig(for: .claudeplatform))
+        let descriptor = ClaudePlatformProviderDescriptor.descriptor
+        let environment = try #require(descriptor.credentials).applyConfig(base: [:], config: config)
+        let context = ProviderCutoverTestSupport.context(environment: environment)
+        let web = try #require(ClaudePlatformProviderDescriptor.spec.webSource)
+        #expect(web.resolveValues(context)?.settings["CLAUDE_PLATFORM_ORGANIZATION_ID"] == field.binding.wrappedValue)
+        #expect(fixture.settings.resolvedCookieSource(provider: .claudeplatform, fallback: .auto) == .auto)
+    }
+
     private func context(source: ProviderSourceMode = .auto, timeout: TimeInterval = 15) -> ProviderFetchContext {
         let base = ProviderCutoverTestSupport.context()
         return ProviderFetchContext(

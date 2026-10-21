@@ -97,7 +97,11 @@ struct SonioxPluginTests {
                 engine,
                 balance: fixture.0 == "balance" ? fixture.1 : Self.balance,
                 monthly: fixture.0 == "usage/monthly" ? fixture.1 : Self.monthly)
-        } throws: { ($0 as? ProviderFetchClassifiedError)?.kind == .parseFailure }
+        } throws: { error in
+            (error as? ProviderFetchClassifiedError)?.kind == .parseFailure &&
+                error.localizedDescription.contains("Refresh to try again") &&
+                error.localizedDescription.contains("update CodexBar or report the issue")
+        }
     }
 
     @Test(arguments: [401, 403, 429, 500, 400], BundledPluginTestSupport.engines)
@@ -111,11 +115,17 @@ struct SonioxPluginTests {
         case 500: .providerUnavailable
         default: .apiFailure
         }
+        let recovery = switch status {
+        case 429: "Wait a moment, then refresh"
+        case 500: "Try again later or check https://status.soniox.com"
+        default: ""
+        }
         for path in ["balance", "usage/monthly"] {
             await #expect {
                 try await Self.fetch(engine, failurePath: path, status: status)
             } throws: { error in
                 (error as? ProviderFetchClassifiedError)?.kind == kind &&
+                    (recovery.isEmpty || error.localizedDescription.contains(recovery)) &&
                     !error.localizedDescription.contains("private-response-marker")
             }
         }

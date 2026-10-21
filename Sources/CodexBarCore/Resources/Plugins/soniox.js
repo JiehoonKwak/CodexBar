@@ -6,7 +6,9 @@ defineProvider({
   settings: [{ key: "SONIOX_ORG_API_KEY", title: "Organization API key", type: "secure" }],
   async fetchUsage(ctx) {
     const invalid = (field) => {
-      throw ctx.fail.parseFailure(`Soniox returned invalid billing data: ${field}.`);
+      throw ctx.fail.parseFailure(
+        `Soniox returned invalid billing data: ${field}. Refresh to try again. If this persists, update CodexBar or report the issue.`,
+      );
     };
     const money = (value, field, signed = false) => {
       if (typeof value !== "string" || !/^-?\d+(?:\.\d+)?$/.test(value.trim())) return invalid(field);
@@ -26,10 +28,15 @@ defineProvider({
           "Soniox requires an organization API key with Balance and spend and Usage and limits access. Project API keys are not supported.",
         );
       }
-      const message = `Soniox returned HTTP ${response.status}.`;
-      if (response.status === 429) throw ctx.fail.rateLimited(message);
-      if (response.status >= 500) throw ctx.fail.providerUnavailable(message);
-      if (response.status !== 200) throw ctx.fail.apiFailure(message);
+      if (response.status === 429) {
+        throw ctx.fail.rateLimited("Soniox rate limit reached (HTTP 429). Wait a moment, then refresh.");
+      }
+      if (response.status >= 500) {
+        throw ctx.fail.providerUnavailable(
+          `Soniox is temporarily unavailable (HTTP ${response.status}). Try again later or check https://status.soniox.com.`,
+        );
+      }
+      if (response.status !== 200) throw ctx.fail.apiFailure(`Soniox returned HTTP ${response.status}.`);
       let data;
       try {
         data = JSON.parse(response.bodyText);

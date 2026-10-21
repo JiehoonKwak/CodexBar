@@ -2,6 +2,10 @@
 
 ## 0.79.1 — Unreleased
 
+### Added
+
+- Soniox: show monthly spend against the organization budget and prepaid balance using an organization API key.
+
 ## 0.79.0 — 2026-10-20
 
 ### Highlights

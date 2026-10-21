@@ -156,9 +156,9 @@ struct ProviderArchitectureGatekeeperTests {
             Self.hash(descriptor.branding.burnDownWidgetColor, into: &burnDownFingerprint)
         }
 
-        // Future AGI and Munito extend the palette without changing existing provider colors.
-        #expect(widgetFingerprint == 6_735_779_563_872_487_318)
-        #expect(burnDownFingerprint == 3_084_140_234_155_981_949)
+        // Soniox extends the palette without changing existing provider colors.
+        #expect(widgetFingerprint == 886_439_142_108_072_577)
+        #expect(burnDownFingerprint == 2_323_729_084_625_502_237)
     }
 
     @Test

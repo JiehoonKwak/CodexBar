@@ -5,6 +5,7 @@
 ### Added
 
 - Soniox: show prepaid balance and monthly spend using an organization API key, with an optional monthly budget meter.
+- Linux: preserve autostart preferences on reinstall when desktop entries contain whitespace, comments, or other groups. (#4662) Thanks @Lucenx9!
 
 ## 0.79.0 — 2026-10-20
 

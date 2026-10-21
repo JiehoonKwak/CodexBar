@@ -27,9 +27,14 @@ The provider uses bearer authentication for two read-only requests to `https://a
 - `GET /v1/organization/balance`: remaining prepaid USD balance and invoice billing state.
 - `GET /v1/organization/usage/monthly`: current calendar month's total USD usage and organization budget.
 
+The menu shows prepaid balance and monthly spend by default. Under **Settings → Providers → Soniox → Visible
+usage items**, enable **Monthly budget** to show the budget meter and reset. The **Billing** checkbox controls the
+billing-method details. Restore Defaults hides the budget meter again. These display choices do not change the API
+data or CLI output.
+
 Monthly usage includes API and Console playground requests across all projects. The budget meter resets at the
 start of the next UTC calendar month. The budget is a spending cap, separate from the prepaid balance. Invoice
-billing accounts show monthly spend and budget without presenting a zero prepaid balance as exhausted credits.
+billing accounts show monthly spend without presenting a zero prepaid balance as exhausted credits.
 A zero budget is shown as a dollar amount without inventing a usage percentage. Project breakdowns and daily
 cost history are not collected.
 

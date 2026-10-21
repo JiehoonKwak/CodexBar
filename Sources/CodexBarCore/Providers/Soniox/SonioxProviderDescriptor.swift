@@ -25,6 +25,7 @@ public enum SonioxProviderDescriptor {
             menuBarBalanceUsesPrepaidCost: true,
             menuCard: ProviderMenuCardPresentation(
                 providerCostIsRequiredUsage: true,
+                defaultHiddenUsageItemIDs: ["metric:primary"],
                 primaryDescriptionPlacement: .detail,
                 hidesPrimaryResetWithoutDate: true)),
         apiKeyField: .init(

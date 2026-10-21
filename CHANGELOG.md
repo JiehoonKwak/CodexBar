@@ -4,7 +4,7 @@
 
 ### Added
 
-- Soniox: show monthly spend against the organization budget and prepaid balance using an organization API key.
+- Soniox: show prepaid balance and monthly spend using an organization API key, with an optional monthly budget meter.
 
 ## 0.79.0 — 2026-10-20
 

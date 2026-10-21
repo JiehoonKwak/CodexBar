@@ -6,15 +6,15 @@ import Testing
 @testable import CodexBarCore
 
 struct ClaudePlatformPluginTests {
-    static let now = Date(timeIntervalSince1970: 1_791_849_600) // 2026-10-13 UTC
-    static let chatOrganization = "11111111-1111-4111-8111-111111111111"
-    static let apiOrganization = "22222222-2222-4222-8222-222222222222"
-    static let organizations = """
+    private static let now = Date(timeIntervalSince1970: 1_791_849_600) // 2026-10-13 UTC
+    private static let chatOrganization = "11111111-1111-4111-8111-111111111111"
+    private static let apiOrganization = "22222222-2222-4222-8222-222222222222"
+    private static let organizations = """
     [{"uuid":"\(chatOrganization)","name":"Synthetic Chat Organization","capabilities":["chat","claude_max"]},
      {"uuid":"\(apiOrganization)","name":"Synthetic API Org",
       "capabilities":["api","api_individual","customer_terms:standard"]}]
     """
-    static let credits = """
+    private static let credits = """
     {"amount":18725,"currency":"USD","balance":{"money":null,"credits":{"amount_minor":18725,"exponent":2}},
      "balance_credits":187,"amount_without_scoped_credits":6250,"auto_reload_settings":null,
      "last_paid_purchase_cents":10000,
@@ -28,16 +28,16 @@ struct ClaudePlatformPluginTests {
      "next_expires_at":"2026-10-28T00:00:00Z"}
     """
 
-    static let otherAPIOrganization = "33333333-3333-4333-8333-333333333333"
+    private static let otherAPIOrganization = "33333333-3333-4333-8333-333333333333"
 
-    static func credits(exponent: Int = 2, amount: Int = 18725, promo: String, tranches: String) -> String {
+    private static func credits(exponent: Int = 2, amount: Int = 18725, promo: String, tranches: String) -> String {
         """
         {"amount":\(amount),"currency":"USD","balance":{"money":null,"credits":{"amount_minor":\(amount),
          "exponent":\(exponent)}},"promo_tranches":[\(promo)],"tranches":[\(tranches)]}
         """
     }
 
-    static func grant(
+    private static func grant(
         name: String?,
         program: String,
         remaining: Int,
@@ -82,6 +82,29 @@ struct ClaudePlatformPluginTests {
             "/api/organizations/\(Self.apiOrganization)/prepaid/credits",
             "/api/organizations/\(Self.apiOrganization)/current_spend",
         ])
+    }
+
+    @Test(arguments: BundledPluginTestSupport.engines)
+    func `a forbidden api organization falls through to the next readable one`(
+        engine: ProviderPluginEngineKind) async throws
+    {
+        let fixture = Fixture(
+            organizations: """
+            [{"uuid":"\(Self.chatOrganization)","name":"Synthetic Chat Organization","capabilities":["chat"]},
+             {"uuid":"\(Self.apiOrganization)","name":"Synthetic Member Org","capabilities":["api"]},
+             {"uuid":"\(Self.otherAPIOrganization)","name":"Synthetic Owner Org","capabilities":["api"]}]
+            """,
+            creditsStatus: [Self.apiOrganization: 403])
+        let usage = try await Self.fetch(engine, fixture: fixture)
+        #expect(usage.providerCost?.balance == 187.25)
+        #expect(usage.identity?.accountOrganization == "Synthetic Owner Org")
+        #expect(await fixture.paths == [
+            "/api/organizations",
+            "/api/organizations/\(Self.apiOrganization)/prepaid/credits",
+            "/api/organizations/\(Self.otherAPIOrganization)/prepaid/credits",
+            "/api/organizations/\(Self.otherAPIOrganization)/current_spend",
+        ])
+        #expect(await fixture.rejections == 0)
     }
 
     @Test(arguments: BundledPluginTestSupport.engines)
@@ -301,18 +324,15 @@ struct ClaudePlatformPluginTests {
         #expect(policy.requiredCookies == ["sessionKey"])
     }
 
-    static func fetch(
-        _ engine: ProviderPluginEngineKind, fixture: Fixture, organization: String = "") async throws -> UsageSnapshot
-    {
+    private static func fetch(_ engine: ProviderPluginEngineKind, fixture: Fixture) async throws -> UsageSnapshot {
         let runtime = try BundledPluginTestSupport.runtime("claudeplatform", engine: engine, transport: fixture)
         return try await runtime.fetchUsage(
-            settings: ["CLAUDE_PLATFORM_ORGANIZATION_ID": organization],
             now: Self.now,
             cookieSessionResolver: { _, _ in await fixture.nextSession() },
             cookieSessionInvalidator: { _, _ in fixture.rejected.increment() })
     }
 
-    final class Counter: @unchecked Sendable {
+    private final class Counter: @unchecked Sendable {
         private let lock = NSLock()
         private var count = 0
         var value: Int {
@@ -322,12 +342,11 @@ struct ClaudePlatformPluginTests {
         func increment() { self.lock.withLock { self.count += 1 } }
     }
 
-    actor Fixture: ProviderHTTPTransport {
+    private actor Fixture: ProviderHTTPTransport {
         let organizations: String
         let organizationsStatus: Int
         let credits: String
         let creditsStatus: [String: Int]
-        let creditsByOrganization: [String: String]
         let spend: String
         let spendStatus: Int
         let firstSessionUnauthorizedPath: String?
@@ -344,7 +363,6 @@ struct ClaudePlatformPluginTests {
             organizationsStatus: Int = 200,
             credits: String = ClaudePlatformPluginTests.credits,
             creditsStatus: [String: Int] = [:],
-            creditsByOrganization: [String: String] = [:],
             spend: String = #"{"amount":4321,"resets_at":"2026-11-01T00:00:00Z"}"#,
             spendStatus: Int = 200,
             firstSessionUnauthorizedPath: String? = nil,
@@ -354,7 +372,6 @@ struct ClaudePlatformPluginTests {
             self.organizationsStatus = organizationsStatus
             self.credits = credits
             self.creditsStatus = creditsStatus
-            self.creditsByOrganization = creditsByOrganization
             self.spend = spend
             self.spendStatus = spendStatus
             self.firstSessionUnauthorizedPath = firstSessionUnauthorizedPath
@@ -385,7 +402,7 @@ struct ClaudePlatformPluginTests {
                 body = self.organizations
             case (5, "credits") where components[3] == "prepaid":
                 status = self.creditsStatus[components[2]] ?? 200
-                body = self.creditsByOrganization[components[2]] ?? self.credits
+                body = self.credits
             case (4, "current_spend"):
                 if self.spendCancels { throw URLError(.cancelled) }
                 status = self.spendStatus

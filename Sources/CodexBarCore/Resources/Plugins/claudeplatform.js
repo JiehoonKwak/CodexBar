@@ -8,7 +8,7 @@ function _nullishCoalesce(lhs, rhsFn) {
 defineProvider({
   id: "claudeplatform",
   name: "Claude Platform",
-  settings: [{ key: "CLAUDE_PLATFORM_ORGANIZATION_ID", title: "Console organization ID", type: "plain" }],
+  settings: [],
   endpoints: ["https://platform.claude.com"],
   capabilities: ["browser-cookies", "http-status"],
   cookieDomains: ["platform.claude.com"],
@@ -33,7 +33,6 @@ defineProvider({
     const minorUnits = (value, field) =>
       typeof value === "number" && Number.isSafeInteger(value) ? value : invalid(field);
     const text = (value) => (typeof value === "string" && value.trim() ? value.trim() : undefined);
-    const requestedOrganization = text(ctx.settings.get("CLAUDE_PLATFORM_ORGANIZATION_ID"));
     // A malformed date means an unknown expiry, never a failed refresh.
     const timestamp = (value) => {
       const raw = text(value);
@@ -95,16 +94,13 @@ defineProvider({
             const id = text(organization.uuid);
             if (!id || !/^[A-Za-z0-9-]{1,64}$/.test(id)) return invalid("organization ID");
             return { id, name: text(organization.name) };
-          })
-          .filter((organization) => !requestedOrganization || organization.id === requestedOrganization);
+          });
         if (candidates.length === 0)
           throw ctx.fail.permissionDenied(
-            requestedOrganization
-              ? "The selected Claude Console API organization is not available in this session. Check the Console organization ID and signed-in account."
-              : "This Claude account has no Claude Console API organization. Create one at platform.claude.com.",
+            "This Claude account has no Claude Console API organization. Create one at platform.claude.com.",
           );
 
-        // An explicit wallet never falls back to another organization. With no selection, preserve listed order.
+        // Try API organizations in listed order; the first one whose billing this member can read wins.
         let selected;
         for (const candidate of candidates) {
           try {

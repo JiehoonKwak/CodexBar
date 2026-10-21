@@ -1,9 +1,7 @@
 import Foundation
 
 public enum ClaudePlatformProviderDescriptor {
-    public static let descriptor: ProviderDescriptor = Self.spec.makeDescriptor(credentials: ProviderCredentialAdapter(
-        environmentProjections: [.workspaceID(Self.organizationKey)]))
-    private static let organizationKey = "CLAUDE_PLATFORM_ORGANIZATION_ID"
+    public static let descriptor: ProviderDescriptor = Self.spec.makeDescriptor()
     public static let spec = PluginProviderSpec(
         id: .claudeplatform,
         displayName: "Claude Platform",
@@ -16,7 +14,6 @@ public enum ClaudePlatformProviderDescriptor {
         confetti: [0xD97757, 0xF0EEE6, 0x141413],
         noDataMessage: "Claude Platform exposes Console credit balance and monthly spend, "
             + "not local token cost history.",
-        config: ProviderConfigCapabilities(workspaceIDValidationOrder: 10),
         presentation: ProviderUsagePresentation(
             costPresenter: { _ in
                 ProviderCostPresentation(showsGenericFallback: false, menuCardStyle: .prepaidCredits)
@@ -44,9 +41,6 @@ public enum ClaudePlatformProviderDescriptor {
             browserSupportExemption: { _, _, settings in
                 settings?[ClaudePlatformProviderSettingsKey.self]?.cookieSource == .manual
             },
-            resolveValues: { context in
-                .init(settings: [Self.organizationKey: context.env[Self.organizationKey] ?? ""])
-            },
             field: .init(
                 id: "claudeplatform-cookie",
                 title: "Cookie header",
@@ -65,14 +59,7 @@ public enum ClaudePlatformProviderDescriptor {
                 showsRefreshAction: true),
             detailLine: "web",
             showsVersionInSettings: false,
-            loginURL: "https://platform.claude.com/"),
-        workspaceField: .init(
-            environmentKey: Self.organizationKey,
-            field: .init(
-                id: "claudeplatform-organization",
-                title: "Organization ID",
-                subtitle: "Optional organization ID for accounts linked to multiple Anthropic organizations.",
-                placeholder: "Organization ID (optional)")))
+            loginURL: "https://platform.claude.com/"))
 }
 
 public enum ClaudePlatformProviderSettingsKey: ProviderSettingsSectionKey {

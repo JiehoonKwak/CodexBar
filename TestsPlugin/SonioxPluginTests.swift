@@ -104,7 +104,7 @@ struct SonioxPluginTests {
         }
     }
 
-    @Test(arguments: [401, 403, 429, 500, 400], BundledPluginTestSupport.engines)
+    @Test(arguments: [401, 403, 429, 500, 400, 404], BundledPluginTestSupport.engines)
     func `HTTP failures are classified without exposing response bodies`(
         status: Int, engine: ProviderPluginEngineKind) async
     {
@@ -116,9 +116,10 @@ struct SonioxPluginTests {
         default: .apiFailure
         }
         let recovery = switch status {
+        case 401, 403: ""
         case 429: "Wait a moment, then refresh"
         case 500: "Try again later or check https://status.soniox.com"
-        default: ""
+        default: "Refresh to try again. If this persists, update CodexBar or report the issue"
         }
         for path in ["balance", "usage/monthly"] {
             await #expect {

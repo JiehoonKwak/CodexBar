@@ -53,7 +53,13 @@ struct SonioxProviderTests {
                 usedPercent: 6, windowMinutes: nil, resetsAt: resetsAt, resetDescription: "$6.00 / $100.00"),
             secondary: nil,
             providerCost: ProviderCostSnapshot(
-                used: 6, limit: 100, currencyCode: "USD", period: "This month", balance: 18.5, updatedAt: now),
+                used: 6,
+                limit: 100,
+                currencyCode: "USD",
+                period: "This month",
+                resetsAt: resetsAt,
+                balance: 18.5,
+                updatedAt: now),
             details: [ProviderDetailSection(
                 title: "Billing", rows: [.init(label: "Prepaid", value: "USD")])],
             updatedAt: now)
@@ -74,6 +80,7 @@ struct SonioxProviderTests {
             tokenCostUsageEnabled: false,
             showOptionalCreditsAndExtraUsage: true,
             hidePersonalInfo: false,
+            paceVisible: true,
             now: now))
         #expect(model.metrics.first?.title == "Monthly budget")
         #expect(model.metrics.first?.percent == 6)
@@ -81,12 +88,15 @@ struct SonioxProviderTests {
         #expect(model.metrics.first?.resetText?.contains("$") == false)
         #expect(model.providerCost?.spendLine == "This month: $6.00")
         #expect(model.providerCost?.balanceLine == "Balance: $18.50")
+        // Spend-only cost sections do not display percentage-derived pacing.
+        #expect(model.providerCost?.dailyTargetText == nil)
 
         let visibleModel = model.applyingUsageItemVisibility(
             hiddenItemIDs: fixture.settings.hiddenUsageItemIDs(for: .soniox))
         #expect(visibleModel.metrics.isEmpty)
         #expect(visibleModel.providerCost?.spendLine == "This month: $6.00")
         #expect(visibleModel.providerCost?.balanceLine == "Balance: $18.50")
+        #expect(visibleModel.providerCost?.dailyTargetText == nil)
         #expect(model.usageItemDescriptors.contains { $0.id == .metric("primary") && $0.title == "Monthly budget" })
     }
 

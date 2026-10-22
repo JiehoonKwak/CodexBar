@@ -2118,6 +2118,8 @@
 "Poe usage history is unavailable." = "ประวัติการใช้งาน Poe ไม่พร้อมใช้งาน";
 "Stored in ~/.codexbar/config.json. Get your key from poe.com/api/keys." = "เก็บไว้ใน ~/.codexbar/config.json รับรหัสของคุณจาก poe.com/api/keys";
 "Billing" = "การเรียกเก็บเงิน";
+"Invoice billing" = "การชำระเงินตามใบแจ้งหนี้";
+"Prepaid" = "ชำระเงินล่วงหน้า";
 "Rate limit" = "ขีดจำกัดอัตรา";
 "Billing and rate-limit data from the v0 Platform API" = "ข้อมูลการเรียกเก็บเงินและการจำกัดอัตราจากแพลตฟอร์ม v0 API";
 "v0 cost history is not available via the Platform API." = "ไม่มีประวัติต้นทุน v0 ผ่านทางแพลตฟอร์ม API";
@@ -2701,5 +2703,5 @@
 "Leave blank to keep the saved credential." = "เว้นว่างไว้เพื่อใช้ข้อมูลรับรองที่บันทึกไว้ต่อไป";
 
 "No personal budget configured" = "ยังไม่ได้กำหนดงบประมาณส่วนตัว";
-"Invoice billing" = "การชำระเงินตามใบแจ้งหนี้";
-"Prepaid" = "ชำระเงินล่วงหน้า";
+
+"monthly_daily_target_format" = "≈ %@ / วัน เพื่อให้ใช้ได้จนถึงการรีเซ็ต";

@@ -2114,6 +2114,8 @@
 "Poe usage history is unavailable." = "Історія використання Poe недоступна.";
 "Stored in ~/.codexbar/config.json. Get your key from poe.com/api/keys." = "Зберігається в ~/.codexbar/config.json. Отримайте свій ключ із poe.com/api/keys.";
 "Billing" = "Виставлення рахунків";
+"Invoice billing" = "Оплата за рахунком";
+"Prepaid" = "Передоплата";
 "Rate limit" = "Обмеження частоти запитів";
 "Billing and rate-limit data from the v0 Platform API" = "Дані про оплату й обмеження частоти запитів з API платформи v0";
 "v0 cost history is not available via the Platform API." = "Історія витрат v0 недоступна через платформу API.";
@@ -2699,5 +2701,5 @@
 "Leave blank to keep the saved credential." = "Залиште порожнім, щоб зберегти поточні облікові дані.";
 
 "No personal budget configured" = "Особистий бюджет не налаштовано";
-"Invoice billing" = "Оплата за рахунком";
-"Prepaid" = "Передоплата";
+
+"monthly_daily_target_format" = "≈ %@ на день, щоб вистачило до скидання";

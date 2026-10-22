@@ -2699,3 +2699,5 @@
 "Leave blank to keep the saved credential." = "保存済みの認証情報を維持するには空欄にしてください。";
 
 "No personal budget configured" = "個人予算が設定されていません";
+"Invoice billing" = "請求書払い";
+"Prepaid" = "前払い";

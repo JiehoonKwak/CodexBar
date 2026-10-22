@@ -2667,3 +2667,5 @@
 "Leave blank to keep the saved credential." = "저장된 인증 정보를 유지하려면 비워 두세요.";
 
 "No personal budget configured" = "개인 예산이 설정되지 않았습니다";
+"Invoice billing" = "청구서 결제";
+"Prepaid" = "선불";

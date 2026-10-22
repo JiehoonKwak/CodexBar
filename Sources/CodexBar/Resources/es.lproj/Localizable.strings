@@ -2697,3 +2697,5 @@
 "Leave blank to keep the saved credential." = "Déjalo en blanco para conservar la credencial guardada.";
 
 "No personal budget configured" = "No hay ningún presupuesto personal configurado";
+"Invoice billing" = "Pago mediante factura";
+"Prepaid" = "Prepago";

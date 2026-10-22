@@ -1,7 +1,5 @@
-import AppKit
 import CodexBarCore
 import Foundation
-import SwiftUI
 import Testing
 @testable import CodexBar
 @testable import CodexBarCLI
@@ -57,7 +55,7 @@ struct SonioxProviderTests {
             providerCost: ProviderCostSnapshot(
                 used: 6, limit: 100, currencyCode: "USD", period: "This month", balance: 18.5, updatedAt: now),
             details: [ProviderDetailSection(
-                title: "Billing", rows: [.init(label: "Billing method", value: "Prepaid")])],
+                title: "Billing", rows: [.init(label: "Prepaid", value: "USD")])],
             updatedAt: now)
         let model = try UsageMenuCardView.Model.make(.init(
             provider: .soniox,
@@ -90,21 +88,18 @@ struct SonioxProviderTests {
         #expect(visibleModel.providerCost?.spendLine == "This month: $6.00")
         #expect(visibleModel.providerCost?.balanceLine == "Balance: $18.50")
         #expect(model.usageItemDescriptors.contains { $0.id == .metric("primary") && $0.title == "Monthly budget" })
+    }
 
-        if let path = ProcessInfo.processInfo.environment["CODEXBAR_SONIOX_SCREENSHOT_DIR"] {
-            let directory = URL(fileURLWithPath: path, isDirectory: true)
-            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-            for dark in [false, true] {
-                let view = UsageMenuCardView(model: visibleModel, width: 380)
-                    .environment(\.locale, Locale(identifier: "en_US_POSIX"))
-                    .environment(\.colorScheme, dark ? .dark : .light)
-                    .environment(\.displayScale, 2)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                let hosting = NSHostingView(rootView: view)
-                hosting.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
-                let data = try #require(MenuLayoutScreenshotRenderTests.pngDataWithWindow(hosting: hosting))
-                try data.write(to: directory.appendingPathComponent("soniox-\(dark ? "dark" : "light").png"))
-            }
+    @Test
+    func `billing labels localize while currency stays canonical`() throws {
+        let details = try [ProviderDetailSection(title: "Billing", rows: [
+            .init(label: "Prepaid", value: "USD"),
+            .init(label: "Invoice billing", value: "USD"),
+        ])]
+        CodexBarLocalizationOverride.$appLanguage.withValue("it") {
+            let localized = UsageMenuCardView.Model.localizedProviderDetails(details, provider: .soniox)
+            #expect(localized.first?.rows.map(\.label) == ["Prepagato", "Pagamento tramite fattura"])
+            #expect(localized.first?.rows.map(\.value) == ["USD", "USD"])
         }
     }
 }

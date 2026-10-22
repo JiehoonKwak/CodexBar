@@ -85,7 +85,7 @@ defineProvider({
         {
           title: "Billing",
           rows: [
-            { label: "Billing method", value: billing.invoice_billing_enabled ? "Invoice billing" : "Prepaid" },
+            { label: billing.invoice_billing_enabled ? "Invoice billing" : "Prepaid", value: "USD" },
             ...(budget === 0 ? [{ label: "Monthly budget", value: ctx.format.usd(budget) }] : []),
           ],
         },

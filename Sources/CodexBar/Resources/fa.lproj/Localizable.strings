@@ -2703,3 +2703,5 @@
 "Leave blank to keep the saved credential." = "برای حفظ اطلاعات ورود ذخیره‌شده، خالی بگذارید.";
 
 "No personal budget configured" = "بودجهٔ شخصی تنظیم نشده است";
+"Invoice billing" = "پرداخت با صورتحساب";
+"Prepaid" = "پیش‌پرداخت";

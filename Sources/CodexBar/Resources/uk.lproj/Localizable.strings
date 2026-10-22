@@ -2699,3 +2699,5 @@
 "Leave blank to keep the saved credential." = "Залиште порожнім, щоб зберегти поточні облікові дані.";
 
 "No personal budget configured" = "Особистий бюджет не налаштовано";
+"Invoice billing" = "Оплата за рахунком";
+"Prepaid" = "Передоплата";

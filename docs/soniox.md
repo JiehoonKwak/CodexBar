@@ -22,7 +22,7 @@ printf '%s' "$SONIOX_ORG_API_KEY" | codexbar config set-api-key --provider sonio
 codexbar usage --provider soniox --source api
 ```
 
-The provider uses bearer authentication for two read-only requests to `https://api.soniox.com`:
+Refresh never submits transcription or synthesis work. The provider uses bearer authentication for two read-only requests to `https://api.soniox.com`:
 
 - `GET /v1/organization/balance`: remaining prepaid USD balance and invoice billing state.
 - `GET /v1/organization/usage/monthly`: current calendar month's total USD usage and organization budget.
@@ -37,8 +37,6 @@ start of the next UTC calendar month. The budget is a spending cap, separate fro
 billing accounts show monthly spend without presenting a zero prepaid balance as exhausted credits.
 A zero budget is shown as a dollar amount without inventing a usage percentage. Project breakdowns and daily
 cost history are not collected.
-
-![Soniox menu card with synthetic usage](screenshots/soniox.png)
 
 HTTP 401 means the key is invalid or revoked. HTTP 403 means a project key was supplied or an organization key
 lacks the required permissions. Update the key's permissions in Soniox Console; changes can take a few minutes

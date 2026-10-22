@@ -24,7 +24,7 @@ struct SonioxPluginTests {
         #expect(usage.providerCost?.currencyCode == "USD")
         #expect(usage.providerCost?.period == "This month")
         #expect(usage.providerCost?.resetsAt == window.resetsAt)
-        #expect(usage.detailRow(label: "Billing method")?.value == "Prepaid")
+        #expect(usage.detailRow(label: "Prepaid")?.value == "USD")
         #expect(usage.secondary == nil)
         #expect(usage.identity == nil)
     }
@@ -38,7 +38,7 @@ struct SonioxPluginTests {
         #expect(usage.primary?.usedPercent == 6)
         #expect(usage.providerCost?.used == 6)
         #expect(usage.providerCost?.balance == nil)
-        #expect(usage.detailRow(label: "Billing method")?.value == "Invoice billing")
+        #expect(usage.detailRow(label: "Invoice billing")?.value == "USD")
     }
 
     @Test(arguments: ["0", "0.001", "-0.50"], BundledPluginTestSupport.engines)

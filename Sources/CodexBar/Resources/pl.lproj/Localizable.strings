@@ -2702,3 +2702,5 @@
 "Leave blank to keep the saved credential." = "Pozostaw puste, aby zachować zapisane dane uwierzytelniające.";
 
 "No personal budget configured" = "Nie skonfigurowano budżetu osobistego";
+"Invoice billing" = "Płatność na podstawie faktury";
+"Prepaid" = "Przedpłata";
